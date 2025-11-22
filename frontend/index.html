@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nava AI - AI Dashboard</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Hide Google Translate bar + branding -->
+  <style>
+    .goog-te-banner-frame {
+      display: none !important;
+    }
+
+    body>.skiptranslate {
+      display: none !important;
+    }
+
+    body {
+      top: 0 !important;
+      position: static !important;
+    }
+
+    .goog-te-gadget,
+    .goog-te-combo,
+    .goog-te-gadget-icon,
+    .goog-logo-link {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body class="bg-black text-white">
+
+  <!-- Main App Root -->
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+
+  <!-- 🌐 Translate Button -->
+  <button id="translate-toggle"
+    class="fixed bottom-4 right-4 bg-[#7B61FF] hover:bg-[#9F7AEA] text-white rounded-full p-4 shadow-lg text-xl transition-all">
+    🌐
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div id="language-menu"
+    class="hidden fixed bottom-20 right-4 bg-[#1c1c1c] border border-gray-700 rounded-lg p-4 shadow-xl z-50">
+    <ul class="space-y-2 text-white text-sm">
+      <li class="lang-option cursor-pointer hover:text-[#7B61FF]" data-lang="en">English</li>
+      <li class="lang-option cursor-pointer hover:text-[#7B61FF]" data-lang="hi">Hindi</li>
+      <li class="lang-option cursor-pointer hover:text-[#7B61FF]" data-lang="te">Telugu</li>
+      <li class="lang-option cursor-pointer hover:text-[#7B61FF]" data-lang="ta">Tamil</li>
+      <li class="lang-option cursor-pointer hover:text-[#7B61FF]" data-lang="ml">Malayalam</li>
+      <li class="lang-option cursor-pointer hover:text-[#7B61FF]" data-lang="fr">French</li>
+      <li class="lang-option cursor-pointer hover:text-[#7B61FF]" data-lang="es">Spanish</li>
+    </ul>
+  </div>
+
+  <!-- Google Translate Element (Hidden) -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <!-- Google Translate Init -->
+  <script>
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,te,ta,ml,fr,es',
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+
+  <!-- Load Google Translate Script -->
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Custom Dropdown Translate Logic -->
+  <script>
+    // Wait for Google translate to fully load
+    function waitForTranslateReady(callback) {
+      const interval = setInterval(() => {
+        const select = document.querySelector(".goog-te-combo");
+        if (select && select.options.length > 1) {
+          clearInterval(interval);
+          callback(select);
+        }
+      }, 500);
+    }
+
+    window.addEventListener("load", () => {
+      const button = document.getElementById("translate-toggle");
+      const menu = document.getElementById("language-menu");
+
+      // Open/close menu
+      button.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+
+      // Handle language selection
+      waitForTranslateReady((select) => {
+        document.querySelectorAll(".lang-option").forEach(option => {
+          option.addEventListener("click", () => {
+            const lang = option.getAttribute("data-lang");
+
+            select.value = lang;
+            select.dispatchEvent(new Event("change"));
+
+            menu.classList.add("hidden"); // hide menu
+          });
+        });
+      });
+    });
+  </script>
+
+</body>
+
+</html>
